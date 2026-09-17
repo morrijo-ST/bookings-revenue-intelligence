@@ -2,11 +2,15 @@
 
 An executive analytics reference for bookings, weighted pipeline, renewals, revenue stages, and forecast performance across a Snowflake-backed BI architecture.
 
+> **Live demo:** https://bookings-revenue-intelligence.onrender.com
+
 > **Working public demo:** Includes deterministic synthetic bookings data, executable forecast/revenue logic, an interactive Streamlit app, tests, and run instructions. See [`DEMO.md`](DEMO.md).
 
 > **Portfolio note:** Employer-specific data, internal names, credentials, customer information, and proprietary business logic are excluded.
 
 ## Try It
+
+**Hosted:** https://bookings-revenue-intelligence.onrender.com
 
 ```bash
 python -m venv .venv
@@ -50,27 +54,6 @@ CRM / Renewal / Revenue / Adjustment Data
 
 `Snowflake` `Power BI` `DAX` `SQL` `Python` `Streamlit` `Plotly` `FP&A` `Forecasting` `Revenue Analytics`
 
-## Repository Structure
-
-```text
-.
-├── app.py
-├── core.py
-├── synthetic.py
-├── requirements.txt
-├── DEMO.md
-├── docs/
-│   ├── case-study.md
-│   ├── architecture.md
-│   ├── forecasting-methodology.md
-│   ├── business-rules.md
-│   ├── data-dictionary.md
-│   ├── security.md
-│   └── runbook.md
-└── tests/
-    └── test_core.py
-```
-
 ## Demo Status
 
 - [x] Public-safe project definition
@@ -79,10 +62,6 @@ CRM / Renewal / Revenue / Adjustment Data
 - [x] Interactive dashboard demo
 - [x] Automated tests
 - [x] Finance documentation / controls
-- [ ] Hosted live-demo URL
+- [x] Hosted live-demo URL
 - [ ] Sanitized Power BI screenshot gallery
 - [ ] Recorded walkthrough
-
-## Case-Study Angle
-
-This project demonstrates how a regional bookings report can evolve into a broader enterprise bookings and revenue intelligence platform with forecasting, variance context, and executive decision support.
