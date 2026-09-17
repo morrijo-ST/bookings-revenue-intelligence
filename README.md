@@ -1,24 +1,33 @@
 # Bookings & Revenue Intelligence
 
-An executive analytics platform for bookings, renewals, revenue stages, bottom-up forecasting, and variance analysis across a Snowflake-backed BI architecture.
+An executive analytics reference for bookings, weighted pipeline, renewals, revenue stages, and forecast performance across a Snowflake-backed BI architecture.
 
-> **Portfolio note:** This is a public-safe reference implementation. Employer-specific data, internal names, credentials, customer information, and proprietary business logic are excluded.
+> **Working public demo:** Includes deterministic synthetic bookings data, executable forecast/revenue logic, an interactive Streamlit app, tests, and run instructions. See [`DEMO.md`](DEMO.md).
+
+> **Portfolio note:** Employer-specific data, internal names, credentials, customer information, and proprietary business logic are excluded.
+
+## Try It
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+streamlit run app.py
+```
 
 ## Business Problem
 
-Finance and commercial teams need one view that reconciles bookings, renewals, future ACV, revenue, forecast changes, and management adjustments. The challenge is not only visualization—it is aligning multiple sources and definitions into a governed model that supports recurring executive decisions.
+Finance and commercial teams need a consistent view of bookings, forecast stages, renewals, revenue, and management expectations. The challenge is aligning those sources and definitions into a governed analytical model rather than producing isolated reports.
 
-## Core Capabilities
+## Demo Capabilities
 
-- bookings and renewal analysis
-- bottom-up forecasting
-- live forecast views
-- prior-period / prior-week comparison
-- revenue-by-stage analysis
-- variance analysis
-- customer and contract hierarchy support
-- financial and operating adjustments
-- management-ready executive reporting
+- Closed Won bookings
+- Commit / Best Case / Pipeline stage analysis
+- probability-weighted pipeline
+- recognized revenue
+- renewal value
+- weekly trend analysis
+- regional performance
 
 ## Reference Architecture
 
@@ -39,13 +48,17 @@ CRM / Renewal / Revenue / Adjustment Data
 
 ## Technology
 
-`Snowflake` `Power BI` `DAX` `SQL` `FP&A` `Forecasting` `Revenue Analytics`
+`Snowflake` `Power BI` `DAX` `SQL` `Python` `Streamlit` `Plotly` `FP&A` `Forecasting` `Revenue Analytics`
 
 ## Repository Structure
 
 ```text
 .
-├── README.md
+├── app.py
+├── core.py
+├── synthetic.py
+├── requirements.txt
+├── DEMO.md
 ├── docs/
 │   ├── case-study.md
 │   ├── architecture.md
@@ -54,24 +67,22 @@ CRM / Renewal / Revenue / Adjustment Data
 │   ├── data-dictionary.md
 │   ├── security.md
 │   └── runbook.md
-├── sample-data/
-├── sql/
-├── dax/
-├── diagrams/
-├── screenshots/
 └── tests/
+    └── test_core.py
 ```
 
-## Portfolio Roadmap
+## Demo Status
 
 - [x] Public-safe project definition
-- [ ] Synthetic bookings / renewals / revenue dataset
-- [ ] Simplified semantic model
-- [ ] Forecast and variance metric library
-- [ ] Architecture diagram
-- [ ] Sanitized report visuals
-- [ ] Demo walkthrough
+- [x] Synthetic bookings / renewal / revenue dataset
+- [x] Executable weighted-pipeline and revenue logic
+- [x] Interactive dashboard demo
+- [x] Automated tests
+- [x] Finance documentation / controls
+- [ ] Hosted live-demo URL
+- [ ] Sanitized Power BI screenshot gallery
+- [ ] Recorded walkthrough
 
 ## Case-Study Angle
 
-This project will show the evolution from an initial regional reporting solution into a broader enterprise bookings and revenue intelligence platform with live forecasting, variance analysis, and executive decision support.
+This project demonstrates how a regional bookings report can evolve into a broader enterprise bookings and revenue intelligence platform with forecasting, variance context, and executive decision support.
