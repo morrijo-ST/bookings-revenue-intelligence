@@ -1,23 +1,115 @@
+
+import html
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import streamlit as st
+
+def shell(name, title, subtitle, style):
+    global PALETTE, INK, PANEL, BG, ACCENT
+    themes = {
+      'terminal': ('#091411','#10221d','#e7f5ee','#3fe0a0','#7e9c8d',4),
+      'purple': ('#171625','#222137','#f5f1ff','#ba9bff','#9ca1c0',12),
+      'indigo': ('#f4f5fb','#ffffff','#242746','#5149b9','#64708b',18),
+      'coral': ('#faf7f2','#ffffff','#302a27','#c7543e','#796d65',20),
+      'blue': ('#f2f6fa','#ffffff','#183348','#126bb5','#5d7486',8),
+      'cyan': ('#07141d','#102330','#def5ff','#53d2ed','#8caab9',4),
+      'ops': ('#0b1720','#132733','#e7f5f4','#4edbc4','#99b5bd',10),
+      'editorial': ('#f8f7f3','#ffffff','#253b38','#317764','#6b7d77',6),
+      'amber': ('#17212c','#223140','#f8f4e9','#efbc67','#a6b2bf',6),
+    }
+    BG,PANEL,INK,ACCENT,MUTED,RADIUS=themes[style]
+    PALETTE=[ACCENT,'#4c9fd6','#d99455','#ae83c6','#6cae8b']
+    px.defaults.color_discrete_sequence=PALETTE
+    st.markdown(f"""<style>
+    .stApp {{background:{BG};color:{INK}}}
+    [data-testid="stHeader"] {{background:{BG};}}
+    .block-container {{max-width:1480px;padding:2rem 2.5rem 4rem;}}
+    [data-testid="stSidebar"] {{background:{PANEL};border-right:1px solid {MUTED}35;}}
+    h1,h2,h3,p,label,[data-testid="stMarkdownContainer"], [data-testid="stMetricValue"], [data-testid="stMetricLabel"] {{color:{INK};}}
+    h1 {{font-size:2.55rem!important;letter-spacing:-.055em;line-height:1.12!important;font-weight:650!important;}}
+    h2,h3 {{letter-spacing:-.025em;}}
+    [data-testid="stCaptionContainer"] p {{color:{MUTED}!important;}}
+    [data-testid="stMetric"] {{background:{PANEL};border:1px solid {MUTED}30;border-top:2px solid {ACCENT};border-radius:{RADIUS}px;padding:18px 20px;}}
+    [data-testid="stMetricValue"] {{font-variant-numeric:tabular-nums;font-size:1.8rem;}}
+    [data-testid="stPlotlyChart"] {{background:{PANEL};border:1px solid {MUTED}30;border-radius:{RADIUS}px;overflow:hidden;}}
+    [data-baseweb="select"] > div, [data-baseweb="input"], [data-baseweb="base-input"], textarea {{background:{PANEL}!important;color:{INK}!important;}}
+    input,textarea {{color:{INK}!important;-webkit-text-fill-color:{INK}!important;}}
+    [data-baseweb="tag"] {{background:{ACCENT}25!important;color:{INK}!important;}}
+    [data-baseweb="tag"] span {{color:{INK}!important;}}
+    button[kind="secondary"], [data-testid="stDownloadButton"] button {{background:{PANEL};color:{INK};border-color:{MUTED}65;}}
+    [data-baseweb="tab"] {{color:{INK}!important;}}
+    [data-testid="stAlert"] {{background:{PANEL};color:{INK};}}
+    .eyebrow {{font:600 11px ui-monospace,monospace;letter-spacing:.15em;color:{ACCENT};margin-bottom:16px;}}
+    .hero {{border-bottom:1px solid {MUTED}40;padding:12px 0 25px;margin-bottom:24px;}}
+    .hero p {{max-width:850px;color:{MUTED};font-size:1rem;}}
+    .brief {{border-left:3px solid {ACCENT};background:{PANEL};padding:16px 20px;margin:18px 0;color:{INK};}}
+    @media(max-width:700px){{.block-container{{padding:1rem;}}h1{{font-size:1.8rem!important;}}}}
+    </style>""",unsafe_allow_html=True)
+    st.markdown(f'<div class="hero"><div class="eyebrow">MORRIS / {html.escape(name.upper())} · SYNTHETIC DEMO</div><h1>{html.escape(title)}</h1><p>{html.escape(subtitle)}</p></div>',unsafe_allow_html=True)
+    st.sidebar.caption('MORRIS · PORTFOLIO LAB')
+    st.sidebar.caption('Fictional data. Explore the workflow; no external systems are connected.')
+
+def chart(fig, height=340):
+    fig.update_layout(template='plotly_white',paper_bgcolor=PANEL,plot_bgcolor=PANEL,font=dict(color=INK,size=12),colorway=PALETTE,height=height,margin=dict(l=55,r=25,t=55,b=55),legend=dict(orientation='h',y=-.24,x=0),hoverlabel=dict(bgcolor=PANEL,font_color=INK))
+    fig.update_xaxes(automargin=True,gridcolor='rgba(128,145,155,.14)',zerolinecolor='rgba(128,145,155,.3)')
+    fig.update_yaxes(automargin=True,gridcolor='rgba(128,145,155,.14)',zerolinecolor='rgba(128,145,155,.3)')
+    st.plotly_chart(fig,use_container_width=True,theme=None)
+
+def brief(text):
+    st.markdown('<div class="brief">'+html.escape(text)+'</div>',unsafe_allow_html=True)
+
+def money(value):
+    sign='−' if value<0 else ''
+    return f'{sign}${abs(value)/1e6:,.2f}M' if abs(value)>=1e6 else f'{sign}${abs(value):,.0f}'
+
+def metrics(items):
+    for col,(label,value) in zip(st.columns(len(items)),items):col.metric(label,value)
+
+def table(df, name='detail', height=360):
+    config={}
+    for col in df.columns:
+        label=str(col).replace('_',' ').title()
+        if pd.api.types.is_numeric_dtype(df[col]) and not pd.api.types.is_bool_dtype(df[col]):
+            if any(x in str(col) for x in ['pct','margin','confidence','attainment','probability','achievement']):
+                config[col]=st.column_config.NumberColumn(label,format='%.3f')
+            elif any(x in str(col) for x in ['amount','revenue','arr','acv','cost','expense','cash','earned','capitalized','amortization','balance','asset','budget','forecast','variance','value','backlog','receipts','payroll','subcontractor','materials','labor']):
+                config[col]=st.column_config.NumberColumn(label,format='$%.2f')
+            else:config[col]=st.column_config.NumberColumn(label)
+        else:config[col]=st.column_config.Column(label)
+    st.dataframe(df,use_container_width=True,hide_index=True,height=height,column_config=config)
+    st.download_button('Download '+name.replace('_',' ')+' CSV',df.to_csv(index=False),name+'.csv','text/csv',key='export_'+name)
+
+def nonempty(df):
+    if df.empty:
+        st.info('No records in this selection. Choose at least one filter value to continue.')
+        st.stop()
+
 import streamlit as st
 import plotly.express as px
 from core import load_data,summary
 
 st.set_page_config(page_title="Bookings Revenue Intelligence",layout="wide")
-st.title("Bookings & Revenue Intelligence")
-st.caption("Synthetic executive analytics for bookings, forecast stages, renewals, revenue and variance.")
+shell('COMMERCIAL FORECAST','Separate won business from possibility.','Compare closed bookings with probability-weighted open pipeline and recognized revenue.','terminal')
 df=load_data()
 regs=st.sidebar.multiselect("Region",sorted(df.region.unique()),default=sorted(df.region.unique()))
 f=df[df.region.isin(regs)]
-s=summary(f)
-c=st.columns(4)
-c[0].metric("Closed Won",f"${s['closed_won']/1e6:,.1f}M")
-c[1].metric("Weighted Pipeline",f"${s['weighted_pipeline']/1e6:,.1f}M")
-c[2].metric("Recognized Revenue",f"${s['revenue']/1e6:,.1f}M")
-c[3].metric("Renewal Value",f"${s['renewals']/1e6:,.1f}M")
-stage=f.groupby("stage",as_index=False)["booking_value"].sum()
-st.plotly_chart(px.bar(stage,x="stage",y="booking_value",title="Bookings by forecast stage"),use_container_width=True)
-weekly=f.groupby("week",as_index=False)[["booking_value","weighted_pipeline","recognized_revenue"]].sum()
-st.plotly_chart(px.line(weekly,x="week",y=["booking_value","weighted_pipeline"],title="Weekly bookings and weighted pipeline"),use_container_width=True)
-reg=f.groupby("region",as_index=False)[["booking_value","recognized_revenue"]].sum()
-st.plotly_chart(px.bar(reg,x="region",y=["booking_value","recognized_revenue"],barmode="group",title="Regional performance"),use_container_width=True)
-st.dataframe(f.sort_values("week",ascending=False),use_container_width=True)
+
+nonempty(f)
+quarter=st.sidebar.selectbox('Period',['Full year','Q1','Q2','Q3','Q4'])
+if quarter!='Full year':f=f[f.week.dt.quarter==int(quarter[1])]
+nonempty(f)
+won=f[f.stage=='Closed Won']
+opened=f[f.stage!='Closed Won']
+metrics([('Closed-won bookings',money(won.booking_value.sum())),('Weighted open pipeline',money(opened.weighted_pipeline.sum())),('Recognized revenue',money(f.recognized_revenue.sum())),('Renewal opportunity value',money(f.renewal_value.sum()))])
+brief('Closed-won bookings are excluded from weighted open pipeline. Stage probabilities are assumptions: Commit 80%, Best Case 50%, Pipeline 20%. Renewal opportunity value includes open stages.')
+a,b=st.columns([1,1.7])
+with a:
+    stage=f.groupby('stage',as_index=False).booking_value.sum()
+    chart(px.bar(stage,x='booking_value',y='stage',orientation='h',title='Commercial value by stage'),390)
+with b:
+    weekly=won.groupby('week').booking_value.sum().rename('Closed won').to_frame().join(opened.groupby('week').weighted_pipeline.sum().rename('Weighted open'),how='outer').fillna(0).reset_index()
+    chart(px.line(weekly,x='week',y=['Closed won','Weighted open'],title='Weekly won business and open opportunity',markers=True),390)
+ledger,assumptions=st.tabs(['Forecast ledger','Stage assumptions'])
+with ledger:table(f.sort_values('week',ascending=False),'bookings_forecast')
+with assumptions:table(f[['stage','probability']].drop_duplicates(),'stage_probabilities',220)
